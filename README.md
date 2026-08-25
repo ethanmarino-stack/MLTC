@@ -1,2 +1,2 @@
 # MLTC
-MLTC-Machine Learning Trail Cam
+MLTC-Machine Learning Trail Cam (WIP Begining Soon)
