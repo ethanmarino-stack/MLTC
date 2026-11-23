@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Texas Wildlife Camera</title><link rel="icon" href="data:,">
+  <link rel="stylesheet" href="/static/styles.css?v=live-view-3"><script src="/static/demo-playback.js?v=live-view-3" defer></script><script src="/static/app.js?v=live-view-3" defer></script>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand"><span class="brand-icon" aria-hidden="true">W</span><div><h1>Texas Wildlife Camera</h1><p>LOCAL FIELD MONITORING · ISAN 3392</p></div></div>
+  <div class="system"><span id="system-status" role="status">Connecting</span><span>Model <strong id="selected-model">yolo11n.pt</strong></span></div>
+</header>
+<main>
+  <nav class="tabs" role="tablist" aria-label="Workspace">
+    <button id="tab-debug" role="tab" aria-selected="true" aria-controls="debug">Debug <span>Source testing</span></button>
+    <button id="tab-demo" role="tab" aria-selected="false" aria-controls="demo" tabindex="-1">Demo <span>Property overview</span></button>
+  </nav>
+  <p class="notice">Pretrained YOLO11n recognizes <strong>cow</strong>, but has no deer or wild-boar classes. Select a trained <strong>best.pt</strong> for custom wildlife detection. Confidence is a model score, not measured accuracy.</p>
+  <p id="error" class="error" role="alert" hidden></p>
+  <section id="debug" role="tabpanel" aria-labelledby="tab-debug">
+    <div class="section-heading"><div><p class="eyebrow">DEVELOPMENT WORKSPACE</p><h2>Watch. Detect. Understand.</h2><p>Test a live source or review a saved recording.</p></div><span class="pill">LOCAL PROCESSING</span></div>
+    <div class="workspace">
+      <aside class="card controls"><h3>Source & detection</h3>
+        <fieldset id="debug-settings">
+          <label for="debug-source">Input source</label><select id="debug-source"><option value="webcam">Browser webcam</option><option value="screen">Browser screen share</option><option value="video">Uploaded video · REPLAY</option></select>
+          <div id="camera-picker"><label for="webcam">Camera</label><select id="webcam"><option value="">Default webcam</option></select><button id="refresh-cameras" class="text-button" type="button">Refresh camera list</button></div>
+          <div id="debug-upload-wrap" hidden><label for="debug-upload">Video or screen recording</label><input id="debug-upload" type="file" accept=".mp4,.avi,.mov,.mkv"><small>Up to 200 MB. Decoded locally by OpenCV.</small></div>
+          <label for="debug-model">Trusted YOLO model path</label><input id="debug-model" list="models" value="yolo11n.pt" spellcheck="false">
+          <label for="debug-confidence">Minimum confidence <output id="debug-confidence-value">50%</output></label><input id="debug-confidence" type="range" min="5" max="95" step="5" value="50">
+          <div class="control-pair"><div><label for="debug-rate">Detection FPS</label><input id="debug-rate" type="number" min="1" max="10" value="3"></div><div><label for="debug-repeats">Confirmations</label><input id="debug-repeats" type="number" min="2" max="20" value="3"></div></div>
+          <label for="debug-cooldown">Per-class cooldown (seconds)</label><input id="debug-cooldown" type="number" min="1" max="3600" value="30">
+        </fieldset>
+        <div class="actions"><button id="debug-start" class="primary" disabled>Start detection</button><button id="debug-stop" disabled>Stop</button></div><small>3 FPS by default. Stop before changing settings.</small>
+      </aside>
+      <div class="monitor-column">
+        <article class="card monitor"><div class="card-heading"><h3>Detection monitor</h3><span id="debug-status" class="pill" role="status">Stopped</span></div>
+          <div class="video-stage"><div id="debug-empty" class="empty"><span class="viewfinder" aria-hidden="true">⌖</span><h3>Your field of view</h3><p>Choose a source, then start detection.<br>Permission is requested only for live sources.</p></div><img id="debug-frame" alt="Annotated source with detection boxes" hidden></div>
+          <div class="metrics"><span>Detection FPS<strong id="debug-fps">—</strong></span><span>Inference<strong id="debug-inference">—</strong></span><span>Processing time<strong id="debug-processing">—</strong></span><span>Footage time<strong id="debug-footage">Not replaying</strong></span></div>
+          <p id="debug-detections" class="detection-summary">No detections yet</p>
+        </article>
+        <details id="preview-details" class="card preview"><summary>Original browser preview <span>No audio captured</span></summary><video id="local-preview" autoplay muted playsinline></video></details>
+      </div>
+      <aside class="card feed"><div class="card-heading"><div><p class="eyebrow">IN-APP ALERTS</p><h3>Activity feed</h3></div><button class="text-button" id="debug-clear">Clear</button></div><p class="feed-note">Confirmed events · newest first</p><ol id="debug-feed" aria-live="polite"></ol><p id="debug-feed-empty" class="feed-empty">Your next sighting will appear here.</p></aside>
+    </div>
+  </section>
+  <section id="demo" role="tabpanel" aria-labelledby="tab-demo" hidden>
+    <div class="section-heading"><div><p class="eyebrow">TRAIL-CAMERA CONCEPT</p><h2>A little closer to the wild.</h2><p>Four independent replay feeds. One local detection model.</p></div><span class="pill">DEMONSTRATION · REPLAY ONLY</span></div>
+    <div class="card demo-controls">
+      <fieldset id="demo-settings" class="demo-settings">
+        <div class="model-control"><label for="demo-model">Trusted YOLO model path</label><input id="demo-model" list="models" value="yolo11n.pt" spellcheck="false"></div>
+        <div><label for="demo-display-mode">Display mode</label><select id="demo-display-mode"><option value="live" selected>Live view</option><option value="detection">Detection view</option></select></div>
+        <div><label for="demo-confidence">Min. confidence <output id="demo-confidence-value">50%</output></label><input id="demo-confidence" type="range" min="5" max="95" step="5" value="50"></div>
+        <div><label for="demo-rate">Detection FPS / camera</label><input id="demo-rate" type="number" min="1" max="3" value="1"></div>
+        <div><label for="demo-repeats">Confirmations</label><input id="demo-repeats" type="number" min="2" max="20" value="3"></div>
+        <div><label for="demo-cooldown">Cooldown (seconds)</label><input id="demo-cooldown" type="number" min="1" max="3600" value="30"></div>
+        <label class="checkbox" for="demo-loop"><input id="demo-loop" type="checkbox">Loop videos</label>
+      </fieldset>
+      <div class="demo-actions"><small>Live view plays raw footage at browser playback speed. Detection samples 1–3 FPS per camera, sequentially.</small><div class="actions"><button id="demo-start" class="primary" disabled>Start all cameras</button><button id="demo-stop" disabled>Stop all cameras</button></div></div>
+    </div>
+    <div class="demo-layout">
+      <div class="camera-grid">
+      {% for id, name in [('north', 'North Trail'), ('creek', 'Creek Crossing'), ('feeder', 'Feeder Area'), ('gate', 'Main Gate')] %}
+        <article class="card camera-panel" aria-label="{{ name }} replay camera">
+          <div class="card-heading"><div><h3>{{ name }}</h3><p id="{{ id }}-status" class="camera-status" role="status">No video selected</p></div><span class="pill replay">REPLAY</span></div>
+          <div class="video-stage"><span id="{{ id }}-view-badge" class="view-badge">LIVE VIEW</span><div id="{{ id }}-empty" class="empty"><span class="viewfinder" aria-hidden="true">⌖</span><h3>Waiting for a recording</h3><p>Select a video below to bring this camera online.</p></div><video id="{{ id }}-video" aria-label="{{ name }} raw replay" muted playsinline preload="auto" hidden></video><img id="{{ id }}-frame" alt="{{ name }} annotated replay" hidden></div>
+          <p id="{{ id }}-playback-note" class="playback-note" role="status">Smooth playback · Detection sampling 1 FPS</p>
+          <div class="camera-caption"><span id="{{ id }}-detections">No detections yet</span><strong id="{{ id }}-footage">Footage —</strong></div>
+          <fieldset class="camera-inputs"><label for="{{ id }}-upload">Upload {{ name }} video</label><input id="{{ id }}-upload" type="file" accept=".mp4,.avi,.mov,.mkv"><label for="{{ id }}-path">Or trusted local video path</label><input id="{{ id }}-path" placeholder="C:/Videos/trail.mp4" spellcheck="false"><small>An upload takes priority over a path. All footage is replay.</small></fieldset>
+        </article>
+      {% endfor %}
+      </div>
+      <aside class="card feed"><div class="card-heading"><div><p class="eyebrow">ACROSS YOUR PROPERTY</p><h3>Recent sightings</h3></div><button class="text-button" id="demo-clear">Clear</button></div><p class="feed-note">Latest 20 events · each camera confirms independently</p><ol id="demo-feed" aria-live="polite"></ol><p id="demo-feed-empty" class="feed-empty">Select recordings and start your cameras.<br>Confirmed sightings will collect here.</p></aside>
+    </div>
+  </section>
+  <datalist id="models"><option value="yolo11n.pt"><option value="runs/train/wildlife/weights/best.pt"></datalist>
+  <footer><span>Python inference · Local snapshots · CSV history</span><span>Training runs separately from this dashboard.</span></footer>
+</main><canvas id="capture-canvas" hidden></canvas>
+</body></html>

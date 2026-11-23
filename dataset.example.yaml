@@ -1,0 +1,13 @@
+# Replace this with your ABSOLUTE dataset folder; use forward slashes on Windows.
+# Do not train until images AND real bounding-box annotations are present.
+path: C:/YOUR/PATH/wildlife_dataset
+train: images/train
+val: images/val
+test: images/test
+
+# Split by camera visit / source video / animal encounter, not individual frames.
+# Related images must stay together to avoid misleading evaluation scores.
+names:
+  0: deer
+  1: wild_boar
+  2: cow
